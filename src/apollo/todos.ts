@@ -22,7 +22,7 @@ export const ADD_TODO = gql`
 
 export const UPDATE_TODO = gql`
   mutation updateTodo($text: String, $checked: Boolean, $id: ID!) {
-    updateTodo(text: $text, $checked: $checked, id: $id) {
+    updateTodo(text: $text, checked: $checked, id: $id) {
       text
       checked
       id
