@@ -1,6 +1,6 @@
 import './App.css'
 import { useMutation, useQuery } from '@apollo/client'
-import { ADD_TODO, GET_TODOS, REMOVE_TODO } from './apollo/todos'
+import { ADD_TODO, GET_TODOS, REMOVE_TODO, UPDATE_TODO } from './apollo/todos'
 import { AllTodosCache, IList } from '../types'
 import TodoItem from './components/TodoItem';
 import { useState } from 'react';
@@ -29,13 +29,15 @@ function App() {
     update(cache, { data: { removeTodo }}) {
       cache.modify({
         fields: {
-          allTodos(currentTodos: {__ref: string}[] = []) {
+          allTodos(currentTodos: {__ref: string}[]=[]) {
             return currentTodos.filter((todo) => todo.__ref !== `Todo:${removeTodo.id}`)
           }
         }
       })
     }
   });
+
+  const [updateTodo, { error: updateError }] = useMutation(UPDATE_TODO);
 
   const counter = (): string => {
     if(data?.allTodos as IList[]) {
@@ -87,6 +89,7 @@ function App() {
                   key={item.id}
                   item={item}
                   handleRemove={removeTodo}
+                  handleUpdate={updateTodo}
                 />
               )}
             </ul>
