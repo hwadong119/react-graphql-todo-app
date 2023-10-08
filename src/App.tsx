@@ -1,6 +1,6 @@
 import './App.css'
 import { useMutation, useQuery } from '@apollo/client'
-import { ADD_TODO, GET_TODOS } from './apollo/todos'
+import { ADD_TODO, GET_TODOS, REMOVE_TODO } from './apollo/todos'
 import { AllTodosCache, IList } from '../types'
 import TodoItem from './components/TodoItem';
 import { useState } from 'react';
@@ -20,6 +20,18 @@ function App() {
         query: GET_TODOS,
         data: {
           allTodos: [createTodo, ...previousTodos as IList[]]
+        }
+      })
+    }
+  });
+
+  const [removeTodo, { error: removeError }] = useMutation(REMOVE_TODO, {
+    update(cache, { data: { removeTodo }}) {
+      cache.modify({
+        fields: {
+          allTodos(currentTodos: {__ref: string}[] = []) {
+            return currentTodos.filter((todo) => todo.__ref !== `Todo:${removeTodo.id}`)
+          }
         }
       })
     }
@@ -74,6 +86,7 @@ function App() {
                 <TodoItem 
                   key={item.id}
                   item={item}
+                  handleRemove={removeTodo}
                 />
               )}
             </ul>
